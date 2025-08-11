@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificador de QR Code</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f4f4f4;
+        padding: 20px;
+    }
+    #reader {
+        width: 300px;
+        margin: auto;
+    }
+    .result {
+        font-size: 2em;
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    .ok {
+        color: green;
+    }
+    .fail {
+        color: red;
+    }
+</style>
+<script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+<h1>Leitor de QR Code</h1>
+<div id="reader"></div>
+<div id="result" class="result"></div>
+
+<script>
+    const LINK_CORRETO = "https://minianonimo.github.io/Paciente.github.io/";
+
+    function onScanSuccess(decodedText) {
+        const resultElement = document.getElementById("result");
+        if (decodedText === LINK_CORRETO) {
+            document.body.style.backgroundColor = "#c8f7c5";
+            resultElement.innerHTML = "✔️ Autenticado";
+            resultElement.className = "result ok";
+        } else {
+            document.body.style.backgroundColor = "#f7c5c5";
+            resultElement.innerHTML = "❌ Não autenticado";
+            resultElement.className = "result fail";
+        }
+    }
+
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+</script>
+
+</body>
+</html>
