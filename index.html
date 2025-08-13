@@ -40,72 +40,71 @@
         background-color: #555;
     }
 </style>
-<script src="https://unpkg.com/html5-qrcode"></script>
-</head>
-<body>
-
-<h1>Leitor de QR Code</h1>
-<div id="reader"></div>
-<button id="toggleCamera">Trocar câmera</button>
-<div id="result" class="result"></div>
-
 <script>
-    const LINK_CORRETO = "https://minianonimo.github.io/Paciente.github.io/";
-    let facingMode = "environment"; // Começa com câmera traseira
-    let html5QrCode;
+const LINK_CORRETO = "https://minianonimo.github.io/Paciente.github.io/";
+let facingMode = "environment"; // Começa com câmera traseira
+let html5QrCode;
 
-    // Sons
-    const beepSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-    const wohngSound = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
-    beepSound.volume = 1; // Volume máximo
-    wohngSound.volume = 1;
+// Sons
+const beepSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+const wohngSound = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+beepSound.volume = 1;
+wohngSound.volume = 1;
 
-    function playSound(sound) {
+// Função para tocar som sempre, reiniciando se necessário
+function playSound(sound) {
+    try {
         sound.pause();
         sound.currentTime = 0;
         sound.play().catch(err => console.log("Erro ao tocar som:", err));
+    } catch (e) {
+        console.log("Erro ao tocar som:", e);
     }
+}
 
-    function startScanner() {
-        if (html5QrCode) {
-            html5QrCode.stop().then(() => {
-                initScanner();
-            }).catch(err => console.error("Erro ao parar scanner:", err));
-        } else {
-            initScanner();
+function startScanner() {
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => initScanner())
+        .catch(err => console.error("Erro ao parar scanner:", err));
+    } else {
+        initScanner();
+    }
+}
+
+function initScanner() {
+    html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+        { facingMode: facingMode },
+        { fps: 10, qrbox: 250 },
+        decodedText => {
+            const resultElement = document.getElementById("result");
+
+            if (decodedText === LINK_CORRETO) {
+                document.body.style.backgroundColor = "#c8f7c5";
+                resultElement.innerHTML = "✔️ Autenticado";
+                resultElement.className = "result ok";
+                playSound(beepSound); // toca sempre beep
+            } else {
+                document.body.style.backgroundColor = "#f7c5c5";
+                resultElement.innerHTML = "❌ Não autenticado";
+                resultElement.className = "result fail";
+                playSound(wohngSound); // toca sempre wohng
+            }
+        },
+        errorMessage => {
+            // Pode ignorar erros de leitura
         }
-    }
+    ).catch(err => console.error("Erro ao iniciar câmera:", err));
+}
 
-    function initScanner() {
-        html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start(
-            { facingMode: facingMode },
-            { fps: 10, qrbox: 250 },
-            decodedText => {
-                const resultElement = document.getElementById("result");
-                if (decodedText === LINK_CORRETO) {
-                    document.body.style.backgroundColor = "#c8f7c5";
-                    resultElement.innerHTML = "✔️ Autenticado";
-                    resultElement.className = "result ok";
-                    playSound(beepSound); // Sempre toca beep
-                } else {
-                    document.body.style.backgroundColor = "#f7c5c5";
-                    resultElement.innerHTML = "❌ Não autenticado";
-                    resultElement.className = "result fail";
-                    playSound(wohngSound); // Sempre toca wohng
-                }
-            },
-            errorMessage => { /* Ignora erros de leitura */ }
-        ).catch(err => console.error("Erro ao iniciar câmera:", err));
-    }
-
-    document.getElementById("toggleCamera").addEventListener("click", () => {
-        facingMode = (facingMode === "environment") ? "user" : "environment";
-        startScanner();
-    });
-
+// Alterna câmera
+document.getElementById("toggleCamera").addEventListener("click", () => {
+    facingMode = (facingMode === "environment") ? "user" : "environment";
     startScanner();
-</script>
+});
 
+// Inicia scanner
+startScanner();
+</script>
 </body>
 </html>
