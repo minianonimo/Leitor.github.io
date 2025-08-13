@@ -40,12 +40,15 @@
         background-color: #555;
     }
 </style>
-    <body>
+<script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
 
 <h1>Leitor de QR Code</h1>
 <div id="reader"></div>
 <button id="toggleCamera">Trocar câmera</button>
 <div id="result" class="result"></div>
+
 <script>
 const LINK_CORRETO = "https://minianonimo.github.io/Paciente.github.io/";
 let facingMode = "environment"; // Começa com câmera traseira
@@ -89,16 +92,16 @@ function initScanner() {
                 document.body.style.backgroundColor = "#c8f7c5";
                 resultElement.innerHTML = "✔️ Autenticado";
                 resultElement.className = "result ok";
-                playSound(beepSound); // toca sempre beep
+                playSound(beepSound);
             } else {
                 document.body.style.backgroundColor = "#f7c5c5";
                 resultElement.innerHTML = "❌ Não autenticado";
                 resultElement.className = "result fail";
-                playSound(wohngSound); // toca sempre wohng
+                playSound(wohngSound);
             }
         },
         errorMessage => {
-            // Pode ignorar erros de leitura
+            // Ignora erros de leitura
         }
     ).catch(err => console.error("Erro ao iniciar câmera:", err));
 }
@@ -112,5 +115,6 @@ document.getElementById("toggleCamera").addEventListener("click", () => {
 // Inicia scanner
 startScanner();
 </script>
+
 </body>
 </html>
