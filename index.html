@@ -54,6 +54,10 @@
     let facingMode = "environment"; // Começa com câmera traseira
     let html5QrCode;
 
+    // Sons
+    const beepSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+    const wohngSound = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+
     function startScanner() {
         if (html5QrCode) {
             html5QrCode.stop().then(() => {
@@ -75,10 +79,12 @@
                     document.body.style.backgroundColor = "#c8f7c5";
                     resultElement.innerHTML = "✔️ Autenticado";
                     resultElement.className = "result ok";
+                    beepSound.play(); // Toca beep
                 } else {
                     document.body.style.backgroundColor = "#f7c5c5";
                     resultElement.innerHTML = "❌ Não autenticado";
                     resultElement.className = "result fail";
+                    wohngSound.play(); // Toca wohng
                 }
             },
             errorMessage => { /* Ignora erros de leitura */ }
